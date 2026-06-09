@@ -1,10 +1,102 @@
-"""
-Security Log Analyzer
-- Clean logs using translate + maketrans
-- Filter ERROR/CRITICAL logs
-- Mask IP addresses
-- Uses match-case instead of main()
-"""
+'''
+PHÂN TÍCH & THIẾT KẾ HỆ THỐNG
+
+1. MỤC TIÊU HỆ THỐNG
+- Làm sạch dữ liệu log chứa ký tự rác.
+- Tách nhiều log từ chuỗi nhập bằng split().
+- Lọc log nguy hiểm chứa ERROR hoặc CRITICAL.
+- Mã hóa địa chỉ IP để bảo mật thông tin.
+- Tối ưu xử lý chuỗi bằng:
+    + str.translate()
+    + str.maketrans()
+    + split()
+    + join()
+    + List Comprehension
+
+2. PHÂN TÍCH maketrans() VÀ translate()
+- str.maketrans("", "", "!@#$")
+  tạo bảng ánh xạ để xóa các ký tự đặc biệt.
+
+- Ví dụ:
+    ! -> xóa
+    @ -> xóa
+    # -> xóa
+    $ -> xóa
+
+- translate() duyệt chuỗi 1 lần duy nhất và áp dụng
+  bảng mapping để xử lý nhanh hơn dùng nhiều replace().
+
+- Ví dụ:
+    Input:
+        ERR!OR 192.168.1.1 Failed@ login
+
+    Output:
+        ERROR 192.168.1.1 Failed login
+
+3. LUỒNG XỬ LÝ CHỨC NĂNG 1
+- Người dùng nhập chuỗi log.
+- split(";") để tách nhiều log.
+- translate(table) để xóa ký tự rác.
+- strip() để loại bỏ khoảng trắng dư.
+- Lưu kết quả vào raw_logs.
+
+4. LUỒNG XỬ LÝ CHỨC NĂNG 2
+- Kiểm tra raw_logs có dữ liệu hay không.
+- Dùng List Comprehension để lọc log chứa:
+    + ERROR
+    + CRITICAL
+
+- Code:
+    processed_logs = [
+        log for log in raw_logs
+        if is_high_risk(log)
+    ]
+
+- Kết quả lưu vào processed_logs.
+
+5. LUỒNG XỬ LÝ CHỨC NĂNG 3
+- Duyệt từng log nguy hiểm.
+- split() để tách từng từ.
+- Kiểm tra IP bằng count(".") == 3.
+- split(".") để tách IP thành 4 phần.
+- Mask 2 cụm cuối:
+    192.168.1.1
+    ->
+    192.168.*.*
+
+- join() để ghép chuỗi lại.
+
+6. THIẾT KẾ HÀM
+- Mỗi hàm chỉ thực hiện 1 nhiệm vụ.
+- Tăng khả năng tái sử dụng.
+- Dễ bảo trì và kiểm thử.
+
+7. EDGE CASES
+- Nếu chưa có dữ liệu:
+    + Chức năng 2:
+        "Chưa có dữ liệu log, vui lòng thực hiện chức năng 1"
+
+    + Chức năng 3:
+        "Chưa có dữ liệu log, vui lòng thực hiện chức năng 2"
+
+- Nếu log không chứa IP:
+    + Giữ nguyên log.
+    + Không làm chương trình lỗi.
+
+8. KỸ THUẬT ĐÃ SỬ DỤNG
+- split()
+- join()
+- translate()
+- maketrans()
+- List Comprehension
+- match-case
+- Docstring
+- snake_case
+'''
+
+
+
+# Security Log Analyzer
 
 # GLOBAL VARIABLES
 raw_logs = []
